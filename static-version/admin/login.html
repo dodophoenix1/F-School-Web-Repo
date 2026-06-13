@@ -79,7 +79,7 @@
         
         if (db.admin && db.admin.username === userVal && db.admin.password === passVal) {
           sessionStorage.setItem('admin_token', 'demo_token_' + Date.now());
-          window.location.href = 'index.html';
+          window.location.href = '/admin/index.html';
         } else {
           errorDiv.textContent = 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง';
           errorDiv.style.display = 'block';

@@ -50,7 +50,7 @@ let tempUploads = {
 document.addEventListener('DOMContentLoaded', () => {
   const token = sessionStorage.getItem('admin_token');
   if (!token) {
-    window.location.href = 'login.html';
+    window.location.href = '/admin/login.html';
     return;
   }
 
@@ -109,7 +109,7 @@ async function mockUploadFile(fileInput) {
 // Logout
 function logoutAdmin() {
   sessionStorage.removeItem('admin_token');
-  window.location.href = 'login.html';
+  window.location.href = '/admin/login.html';
 }
 
 // Fetch all database config on startup

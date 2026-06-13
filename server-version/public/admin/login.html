@@ -68,7 +68,7 @@
         
         if (data.success && data.token) {
           sessionStorage.setItem('admin_token', data.token);
-          window.location.href = 'index.html';
+          window.location.href = '/admin/index.html';
         } else {
           errorDiv.textContent = data.error || 'การเข้าสู่ระบบผิดพลาด';
           errorDiv.style.display = 'block';
