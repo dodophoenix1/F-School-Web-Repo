@@ -65,7 +65,7 @@ async function getDatabase() {
     return JSON.parse(localData);
   }
   try {
-    const res = await fetch('../data/database.json');
+    const res = await fetch('/data/database.json');
     const data = await res.json();
     localStorage.setItem('school_database', JSON.stringify(data));
     return data;

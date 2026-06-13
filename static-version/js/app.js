@@ -57,7 +57,7 @@ async function getDatabase() {
     try {
       const cached = JSON.parse(localData);
       // Always fetch the latest database.json to merge in new default fields
-      const res = await fetch('data/database.json');
+      const res = await fetch('/data/database.json');
       const defaults = await res.json();
       // Merge new config keys from defaults that don't exist in cached version
       if (defaults.config && cached.config) {
@@ -80,7 +80,7 @@ async function getDatabase() {
     }
   }
   try {
-    const res = await fetch('data/database.json');
+    const res = await fetch('/data/database.json');
     const data = await res.json();
     localStorage.setItem('school_database', JSON.stringify(data));
     return data;
