@@ -37,6 +37,11 @@ function readDB() {
 function writeDB(data) {
   try {
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
+    // Auto-save to static-version/data/database.json for convenience
+    const staticDbFile = path.join(__dirname, '..', 'static-version', 'data', 'database.json');
+    if (fs.existsSync(path.dirname(staticDbFile))) {
+      fs.writeFileSync(staticDbFile, JSON.stringify(data, null, 2), 'utf8');
+    }
     return true;
   } catch (error) {
     console.error("Error writing database.json:", error);
@@ -448,6 +453,17 @@ app.post('/api/admin/change-password', checkAuth, (req, res) => {
 app.post('/api/admin/upload', checkAuth, upload.single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, error: 'กรุณาเลือกไฟล์สำหรับอัปโหลด' });
+  }
+  
+  // Auto-copy uploaded file to static-version/uploads for convenience
+  try {
+    const staticUploadsDir = path.join(__dirname, '..', 'static-version', 'uploads');
+    if (fs.existsSync(staticUploadsDir)) {
+      const destPath = path.join(staticUploadsDir, req.file.filename);
+      fs.copyFileSync(req.file.path, destPath);
+    }
+  } catch (err) {
+    console.error("Failed to copy file to static-version uploads:", err);
   }
   
   // Return relative path to access the file from frontend
