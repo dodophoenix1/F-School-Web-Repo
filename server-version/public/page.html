@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ข้อมูลทั่วไป | Portal โรงเรียน</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Premium Background Elements -->
+  <div class="watermark-bg"></div>
+  <div class="bg-waves-grid">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="wave-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.12" />
+          <stop offset="100%" stop-color="#93c5fd" stop-opacity="0.02" />
+        </linearGradient>
+        <linearGradient id="wave-grad-2" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.1" />
+          <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.01" />
+        </linearGradient>
+        <linearGradient id="wave-grad-3" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#2563eb" stop-opacity="0.08" />
+          <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.02" />
+        </linearGradient>
+      </defs>
+      <!-- Technical Grid & Circles -->
+      <circle cx="1200" cy="150" r="300" fill="none" stroke="#3b82f6" stroke-opacity="0.12" stroke-width="1" />
+      <circle cx="1200" cy="150" r="450" fill="none" stroke="#3b82f6" stroke-opacity="0.07" stroke-width="0.8" stroke-dasharray="8 6" />
+      <circle cx="1200" cy="150" r="150" fill="none" stroke="#3b82f6" stroke-opacity="0.1" stroke-width="1.2" />
+      
+      <circle cx="150" cy="750" r="250" fill="none" stroke="#3b82f6" stroke-opacity="0.1" stroke-width="1" />
+      <circle cx="150" cy="750" r="400" fill="none" stroke="#3b82f6" stroke-opacity="0.07" stroke-width="0.8" stroke-dasharray="4 4" />
+      
+      <line x1="-100" y1="100" x2="1600" y2="950" stroke="#3b82f6" stroke-opacity="0.1" stroke-width="1" />
+      <line x1="300" y1="-100" x2="1300" y2="1000" stroke="#3b82f6" stroke-opacity="0.07" stroke-width="0.8" />
+      <line x1="1600" y1="100" x2="-200" y2="1000" stroke="#3b82f6" stroke-opacity="0.1" stroke-width="1" />
+      <line x1="1200" y1="-50" x2="100" y2="1050" stroke="#3b82f6" stroke-opacity="0.07" stroke-width="0.8" stroke-dasharray="6 4" />
+      
+      <circle cx="900" cy="650" r="4" fill="#3b82f6" fill-opacity="0.3" />
+      <circle cx="680" cy="512" r="3.5" fill="#3b82f6" fill-opacity="0.25" />
+      <circle cx="1066" cy="750" r="3" fill="#3b82f6" fill-opacity="0.25" />
+      <circle cx="1115" cy="485" r="4.5" fill="#3b82f6" fill-opacity="0.35" />
+      <circle cx="340" cy="355" r="4" fill="#3b82f6" fill-opacity="0.3" />
+      <circle cx="510" cy="460" r="3" fill="#3b82f6" fill-opacity="0.25" />
+      <circle cx="1200" cy="600" r="3.5" fill="#3b82f6" fill-opacity="0.25" />
+      <circle cx="950" cy="150" r="4" fill="#3b82f6" fill-opacity="0.3" />
+      <circle cx="1050" cy="300" r="4.5" fill="#3b82f6" fill-opacity="0.35" />
+      <circle cx="780" cy="180" r="3" fill="#3b82f6" fill-opacity="0.25" />
+
+      <!-- Soft Overlapping Waves -->
+      <path d="M-100,700 C300,550 700,750 1100,630 C1300,570 1500,650 1600,630 L1600,950 L-100,950 Z" fill="url(#wave-grad-1)" />
+      <path d="M-100,750 C400,670 600,800 1000,690 C1300,610 1450,700 1600,680 L1600,950 L-100,950 Z" fill="url(#wave-grad-2)" />
+      <path d="M-100,670 C250,730 680,630 980,720 C1250,800 1450,650 1600,700 L1600,950 L-100,950 Z" fill="url(#wave-grad-3)" />
+    </svg>
+  </div>
+
+  <div class="container">
+    <!-- Header Banner Section -->
+    <header class="header-banner">
+      <div class="header-content">
+        <img src="/uploads/logo_default.png" alt="School Logo" class="header-logo logo-img">
+        <div class="header-text">
+          <h1 class="school-name">โรงเรียนฝางวิทยายน</h1>
+          <p class="school-name-en">Fangwitayayon School</p>
+          <p class="school-slogan" style="font-size: 0.95rem; margin-top: 5px; color: var(--secondary); opacity: 0.9; font-weight: 500;"></p>
+        </div>
+      </div>
+    </header>
+
+    <!-- HOT-INFO Scrolling Bar -->
+    <div class="hot-info-bar">
+      <div class="hot-info-label">HOT-INFO</div>
+      <div class="hot-info-content">
+        <marquee id="hot-info-marquee" direction="left" scrollamount="4" onmouseover="this.stop()" onmouseout="this.start()">
+          กำลังโหลดข่าวประกาศด่วน...
+        </marquee>
+      </div>
+    </div>
+
+    <!-- Main 3-Column Layout -->
+    <div class="main-layout">
+      
+      <!-- Left Column: Navigation Menus -->
+      <aside class="left-sidebar">
+        <div class="glass-card" style="padding: 15px;">
+          <h3 class="section-title">เมนูหลัก</h3>
+          <ul class="menu-list" id="main-menu-container">
+            <li class="menu-item"><a href="index.html">หน้าแรก</a></li>
+            <li class="menu-item"><a href="page.html?id=history">ประวัติโรงเรียน</a></li>
+            <li class="menu-item"><a href="page.html?id=goal">วิสัยทัศน์ / พันธกิจ</a></li>
+            <li class="menu-item"><a href="page.html?id=sign">ตราสัญลักษณ์โรงเรียน</a></li>
+            <li class="menu-item"><a href="#contact-section">ติดต่อสอบถาม</a></li>
+          </ul>
+        </div>
+
+        <div class="glass-card" style="padding: 15px; margin-top: 20px;">
+          <h3 class="section-title">บริการออนไลน์</h3>
+          <div class="banner-container" id="side-banners-container">
+            <!-- Dynamic banners injected here -->
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Column: Page content -->
+      <main class="center-content" id="page-content-area">
+        <a href="index.html" class="back-btn">&larr; ย้อนกลับไปหน้าแรก</a>
+        
+        <div class="glass-card">
+          <h1 class="detail-title" id="page-title" style="margin-bottom: 20px; border-bottom: 2px solid rgba(0, 0, 0, 0.05); padding-bottom: 12px;">กำลังโหลดข้อมูล...</h1>
+          <div class="detail-content" id="page-body">
+            <!-- Dynamic page body (HTML supported) injected here -->
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Column: School Board / Management portraits -->
+      <aside class="right-sidebar">
+        <div class="glass-card" style="padding: 15px;">
+          <h3 class="section-title">คณะผู้บริหาร</h3>
+          <div class="board-container" id="board-container">
+            <!-- Dynamic board cards injected here -->
+          </div>
+        </div>
+
+        <!-- Newsletter Slideshow Section -->
+        <div class="glass-card" style="padding: 15px; margin-top: 20px;">
+          <h3 class="section-title">จดหมายข่าวประชาสัมพันธ์</h3>
+          <div class="newsletter-slider" id="newsletter-slider-container">
+            <div style="text-align: center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">กำลังโหลดจดหมายข่าว...</div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer" id="contact-section">
+      <div class="footer-content">
+        <div class="footer-about">
+          <h3 class="school-name">โรงเรียนฝางวิทยายน</h3>
+          <p class="school-name-en">Fangwitayayon School</p>
+          <p style="margin-top: 10px; opacity: 0.8; font-size: 0.95rem;" id="contact-address">
+            123 ถนนกลางเมือง ต.ในเมือง อ.เมือง จ.ขอนแก่น 40000
+          </p>
+          <div class="footer-socials">
+            <a href="#" class="social-icon" id="contact-fb" target="_blank" rel="noopener noreferrer">F</a>
+            <a href="#" class="social-icon" id="contact-yt" target="_blank" rel="noopener noreferrer">Y</a>
+          </div>
+        </div>
+        <div class="footer-contact">
+          <h3>ติดต่อเรา</h3>
+          <p id="contact-phone">โทรศัพท์: 043-221081</p>
+          <p id="contact-email">อีเมล: kkw@kkw.ac.th</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-text">© 2026 โรงเรียนฝางวิทยายน. All Rights Reserved.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+</body>
+</html>

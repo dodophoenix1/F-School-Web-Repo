@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>เข้าสู่ระบบจัดการหลังบ้าน | Admin Login</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+
+  <div class="login-container">
+    <div class="glass-card text-center" style="width: 100%; max-width: 400px; padding: 40px 30px; border-radius: 16px;">
+      <img src="/uploads/logo_default.png" alt="School Logo" class="logo-img" style="width: 80px; height: 80px; margin-bottom: 20px; object-fit: contain;">
+      
+      <h2 style="color: var(--white); margin-bottom: 5px; font-weight: 700;">ระบบบริหารจัดการเว็บไซต์</h2>
+      <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; margin-bottom: 30px;" class="school-name">โรงเรียนฝางวิทยายน</p>
+      
+      <div id="login-error-msg" style="display: none; background-color: #fee2e2; color: #991b1b; padding: 10px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 500;">
+        ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง
+      </div>
+
+      <form id="login-form">
+        <div class="form-group" style="text-align: left;">
+          <label for="username" style="color: rgba(255, 255, 255, 0.85); font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 6px;">ชื่อผู้ใช้งาน (Username)</label>
+          <input type="text" id="username" required placeholder="กรอกชื่อผู้ใช้งาน" class="admin-input" style="width: 100%;">
+        </div>
+
+        <div class="form-group" style="text-align: left; margin-top: 20px; margin-bottom: 30px;">
+          <label for="password" style="color: rgba(255, 255, 255, 0.85); font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 6px;">รหัสผ่าน (Password)</label>
+          <input type="password" id="password" required placeholder="กรอกรหัสผ่าน" class="admin-input" style="width: 100%;">
+        </div>
+
+        <button type="submit" class="admin-btn primary" style="width: 100%; font-size: 1.05rem; padding: 12px; font-weight: bold; border-radius: 8px;">
+          เข้าสู่ระบบ
+        </button>
+      </form>
+
+      <div style="margin-top: 25px; font-size: 0.85rem; color: rgba(255,255,255,0.4);">
+        <a href="../index.html" style="color: var(--secondary); font-weight: 500;">&larr; กลับไปยังหน้าหลักของเว็บไซต์</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Serverless LocalStorage Helper
+    async function getDatabase() {
+      const localData = localStorage.getItem('school_database');
+      if (localData) {
+        return JSON.parse(localData);
+      }
+      try {
+        const res = await fetch('../data/database.json');
+        const data = await res.json();
+        localStorage.setItem('school_database', JSON.stringify(data));
+        return data;
+      } catch (error) {
+        console.error("Failed to fetch database.json:", error);
+        return {};
+      }
+    }
+
+    // Bind form submission
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const userVal = document.getElementById('username').value;
+      const passVal = document.getElementById('password').value;
+      const errorDiv = document.getElementById('login-error-msg');
+      
+      errorDiv.style.display = 'none';
+
+      try {
+        const db = await getDatabase();
+        
+        if (db.admin && db.admin.username === userVal && db.admin.password === passVal) {
+          sessionStorage.setItem('admin_token', 'demo_token_' + Date.now());
+          window.location.href = 'index.html';
+        } else {
+          errorDiv.textContent = 'ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง';
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        console.error(error);
+        errorDiv.textContent = 'เกิดข้อผิดพลาดในการโหลดระบบล็อกอิน';
+        errorDiv.style.display = 'block';
+      }
+    });
+
+    // Load logo and school name from config
+    getDatabase()
+      .then(data => {
+        if (data.config) {
+          let logoSrc = data.config.logo || '../uploads/logo_default.png';
+          // Make path relative to admin subdirectory
+          if (logoSrc.startsWith('/')) {
+            logoSrc = '..' + logoSrc;
+          }
+          document.querySelector('.logo-img').src = logoSrc;
+          if (data.config.schoolName) document.querySelector('.school-name').textContent = data.config.schoolName;
+          
+          // CSS custom properties mapping
+          document.documentElement.style.setProperty('--primary', data.config.primaryColor || '#8b0000');
+          document.documentElement.style.setProperty('--secondary', data.config.secondaryColor || '#ffd700');
+        }
+      })
+      .catch(console.error);
+  </script>
+</body>
+</html>

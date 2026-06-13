@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบหลังบ้านผู้ดูแลระบบ | Dashboard</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- Admin Header Bar -->
+  <header class="admin-header">
+    <h1>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--admin-accent);"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+      แผงควบคุมระบบหลังบ้าน
+    </h1>
+    <div class="nav-actions">
+      <span id="admin-user-display" style="font-weight: 600; color: var(--admin-text-muted);">ผู้ดูแลระบบ: admin</span>
+      <button class="admin-btn primary" onclick="downloadDatabaseJson()" style="background-color: var(--admin-accent); border-color: var(--admin-accent);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        ดาวน์โหลด database.json
+      </button>
+      <a href="../index.html" class="admin-btn secondary" target="_blank">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        ดูหน้าเว็บจริง
+      </a>
+      <button class="admin-btn danger" onclick="logoutAdmin()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        ออกจากระบบ
+      </button>
+    </div>
+  </header>
+
+  <!-- Admin Workspace -->
+  <div class="admin-container">
+    
+    <!-- Sidebar Navigation Tabs -->
+    <aside class="admin-sidebar">
+      <ul class="admin-tabs">
+        <li><button class="admin-tab-btn active" onclick="switchTab('tab-info', this)">ตั้งค่าโรงเรียนทั่วไป</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-header', this)">จัดการข้อมูล Header</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-menus', this)">จัดการลิงก์เมนูหลัก</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-banners', this)">จัดการแบนเนอร์บริการ</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-slider', this)">จัดการรูปภาพสไลด์</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-news', this)">จัดการข่าวประชาสัมพันธ์</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-board', this)">จัดการทำเนียบผู้บริหาร</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-activities', this)">จัดการภาพกิจกรรมเด่น</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-videos', this)">จัดการวิดีโอแนะนำ</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-partners', this)">จัดการภาคีเครือข่าย</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-newsletters', this)">จัดการจดหมายข่าว</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-pages', this)">จัดการหน้าเว็บย่อย</button></li>
+        <li><button class="admin-tab-btn" onclick="switchTab('tab-password', this)">เปลี่ยนรหัสผ่าน</button></li>
+      </ul>
+    </aside>
+
+    <!-- Content Workspace -->
+    <main class="admin-content">
+
+      <!-- SECTION 1: General Info -->
+      <section id="tab-info" class="admin-section active">
+        <div class="section-header">
+          <h2>ตั้งค่าข้อมูลทั่วไปของโรงเรียน</h2>
+          <button class="admin-btn success" onclick="saveGeneralConfig()">บันทึกการตั้งค่า</button>
+        </div>
+        
+        <div class="glass-card" style="background: rgba(30, 41, 59, 0.4); border-color: var(--admin-border);">
+          <form id="form-general-info">
+            <div class="color-pickers-row">
+              <div class="color-picker-item">
+                <input type="color" id="primaryColor">
+                <label for="primaryColor">สีหลักของโรงเรียน</label>
+              </div>
+              <div class="color-picker-item">
+                <input type="color" id="secondaryColor">
+                <label for="secondaryColor">สีรอง (สีเน้น/โลหะ)</label>
+              </div>
+              <div class="color-picker-item">
+                <input type="color" id="bgColor">
+                <label for="bgColor">สีพื้นหลังของเว็บ</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="schoolName">ชื่อโรงเรียน (ภาษาไทย)</label>
+              <input type="text" id="schoolName" class="admin-input">
+            </div>
+
+            <div class="form-group">
+              <label for="schoolNameEn">ชื่อโรงเรียน (ภาษาอังกฤษ)</label>
+              <input type="text" id="schoolNameEn" class="admin-input">
+            </div>
+
+            <div class="form-group">
+              <label for="slogan">คำขวัญโรงเรียน</label>
+              <input type="text" id="slogan" class="admin-input">
+            </div>
+
+            <div class="form-group">
+              <label for="hotInfo">แถบข้อความประกาศวิ่งด่วน (Hot Info)</label>
+              <input type="text" id="hotInfo" class="admin-input" placeholder="ข้อความจะแสดงเป็นแถบวิ่งหน้าแรก...">
+            </div>
+
+            <div class="form-group">
+              <label>โลโก้โรงเรียน</label>
+              <div class="image-upload-wrapper">
+                <img id="logo-preview" src="" alt="Logo Preview" class="image-preview">
+                <div>
+                  <input type="file" id="logo-file" accept="image/*" style="display: none;" onchange="handleLogoUpload(event)">
+                  <button type="button" class="admin-btn primary" onclick="document.getElementById('logo-file').click()">
+                    อัปโหลดโลโก้ใหม่
+                  </button>
+                  <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 200x200px (ไฟล์ .png พื้นหลังโปร่งแสง)</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--admin-border); margin: 30px 0; padding-top: 20px;">
+              <h3 style="margin-bottom: 15px; font-size: 1.15rem; color: var(--admin-accent);">ข้อมูลสำหรับการติดต่อ (ติดต่อเรา)</h3>
+              <div class="form-group">
+                <label for="contactAddress">ที่อยู่โรงเรียน</label>
+                <input type="text" id="contactAddress" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label for="contactPhone">เบอร์โทรศัพท์</label>
+                <input type="text" id="contactPhone" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label for="contactEmail">อีเมลโรงเรียน</label>
+                <input type="email" id="contactEmail" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label for="contactFB">ลิงก์หน้าเพจ Facebook (URL)</label>
+                <input type="url" id="contactFB" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label for="contactYT">ลิงก์แชนเนล YouTube (URL)</label>
+                <input type="url" id="contactYT" class="admin-input">
+              </div>
+              <div class="form-group">
+                <label for="footerText">ลิขสิทธิ์ / ข้อความแสดงท้ายหน้าเว็บ (Footer Text)</label>
+                <input type="text" id="footerText" class="admin-input">
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SECTION 1.5: Header Banner Info -->
+      <section id="tab-header" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการข้อมูล Header ด้านบนเว็บไซต์</h2>
+          <button class="admin-btn success" onclick="saveHeaderConfig()">บันทึกข้อมูล Header</button>
+        </div>
+        
+        <div class="glass-card" style="background: rgba(30, 41, 59, 0.4); border-color: var(--admin-border);">
+          <form id="form-header-info">
+            <div class="form-group">
+              <label for="headerSchoolName">ชื่อโรงเรียนบน Header (ภาษาไทย)</label>
+              <input type="text" id="headerSchoolName" class="admin-input">
+            </div>
+
+            <div class="form-group">
+              <label for="headerSchoolNameEn">ชื่อโรงเรียนบน Header (ภาษาอังกฤษ)</label>
+              <input type="text" id="headerSchoolNameEn" class="admin-input">
+            </div>
+
+            <div class="form-group">
+              <label for="headerSlogan">คำขวัญ / สโลแกนโรงเรียนบน Header</label>
+              <input type="text" id="headerSlogan" class="admin-input">
+            </div>
+
+            <div class="color-pickers-row" style="margin-top: 15px; margin-bottom: 25px;">
+              <div class="color-picker-item">
+                <input type="color" id="headerTitleColor">
+                <label for="headerTitleColor">สีตัวอักษรชื่อโรงเรียน (ภาษาไทย)</label>
+              </div>
+              <div class="color-picker-item">
+                <input type="color" id="headerSubtitleColor">
+                <label for="headerSubtitleColor">สีตัวอักษรคำขวัญ/รายละเอียด</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="headerPaddingY">ขนาดความสูงของ Header (Padding บน-ล่าง): <span id="headerPaddingY-val">24</span>px</label>
+              <input type="range" id="headerPaddingY" min="10" max="100" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerPaddingY-val').textContent = this.value">
+            </div>
+
+            <div class="form-group">
+              <label>โลโก้บน Header</label>
+              <div class="image-upload-wrapper">
+                <img id="header-logo-preview" src="" alt="Header Logo Preview" class="image-preview">
+                <div>
+                  <input type="file" id="header-logo-file" accept="image/*" style="display: none;" onchange="handleHeaderLogoUpload(event)">
+                  <button type="button" class="admin-btn primary" onclick="document.getElementById('header-logo-file').click()">
+                    อัปโหลดโลโก้บน Header ใหม่
+                  </button>
+                  <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 200x200px (ไฟล์ .png หรือ .jpg)</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>ภาพพื้นหลัง Header (Background Image)</label>
+              <div class="image-upload-wrapper">
+                <img id="header-bg-preview" src="" alt="Header BG Preview" class="image-preview" style="max-height: 150px; width: 100%; object-fit: cover; transition: object-position 0.1s ease;">
+                <div>
+                  <input type="file" id="header-bg-file" accept="image/*" style="display: none;" onchange="handleHeaderBgUpload(event)">
+                  <button type="button" class="admin-btn primary" onclick="document.getElementById('header-bg-file').click()">
+                    อัปโหลดภาพพื้นหลัง Header ใหม่
+                  </button>
+                  <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 1200x300px (ไฟล์ .jpg หรือ .png)</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px; margin-bottom: 25px;">
+              <label for="headerBgPosY">เลือกมุมของภาพพื้นหลัง (เลื่อนตำแหน่งแนวตั้ง): <span id="headerBgPosY-val">50</span>%</label>
+              <input type="range" id="headerBgPosY" min="0" max="100" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerBgPosY-val').textContent = this.value; document.getElementById('header-bg-preview').style.objectPosition = 'center ' + this.value + '%';">
+              <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">เลื่อนแถบเพื่อขยับพรีวิวขึ้น-ลง (0% = ขอบบนสุด, 100% = ขอบล่างสุด) เพื่อเลือกภาพส่วนที่ต้องการนำไปเป็นแบนเนอร์จริง</p>
+            </div>
+
+            <div style="border-top: 1px solid var(--admin-border); margin: 25px 0; padding-top: 20px;">
+              <h3 style="margin-bottom: 15px; font-size: 1.15rem; color: var(--admin-accent);">ความโปร่งแสงของเกรดสีทับภาพ (Color Grading Overlay Opacity)</h3>
+              <p style="font-size: 0.85rem; color: var(--admin-text-muted); margin-bottom: 15px;">ปรับระดับความจางของสีกราเดียนต์เพื่อให้ภาพพื้นหลังมีความสวยงามเด่นชัดตามต้องการ</p>
+              
+              <div class="form-group">
+                <label for="headerOp1">ความเข้มสีหลักด้านซ้าย (Primary Gradient Opacity): <span id="headerOp1-val">88</span>%</label>
+                <input type="range" id="headerOp1" min="0" max="100" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerOp1-val').textContent = this.value">
+              </div>
+
+              <div class="form-group">
+                <label for="headerOp2">ความเข้มสีหลักตรงกลาง (Middle Gradient Opacity): <span id="headerOp2-val">55</span>%</label>
+                <input type="range" id="headerOp2" min="0" max="100" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerOp2-val').textContent = this.value">
+              </div>
+
+              <div class="form-group">
+                <label for="headerOp3">ความเข้มสีรองด้านขวา (Secondary Gradient Opacity): <span id="headerOp3-val">20</span>%</label>
+                <input type="range" id="headerOp3" min="0" max="100" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerOp3-val').textContent = this.value">
+              </div>
+            </div>
+
+            <div style="border-top: 1px solid var(--admin-border); margin: 25px 0; padding-top: 20px;">
+              <h3 style="margin-bottom: 15px; font-size: 1.15rem; color: var(--admin-accent);">ขนาดขององค์ประกอบบน Header (Header Element Sizes)</h3>
+              <p style="font-size: 0.85rem; color: var(--admin-text-muted); margin-bottom: 15px;">ปรับระดับขนาดโลโก้ ขนาดตัวอักษรไทย-อังกฤษบน Header แบนเนอร์</p>
+              
+              <div class="form-group">
+                <label for="headerLogoSize">ขนาดของโลโก้สถาบัน: <span id="headerLogoSize-val">115</span>px</label>
+                <input type="range" id="headerLogoSize" min="80" max="180" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerLogoSize-val').textContent = this.value; document.getElementById('header-logo-preview').style.width = this.value + 'px'; document.getElementById('header-logo-preview').style.height = this.value + 'px';">
+              </div>
+
+              <div class="form-group">
+                <label for="headerTitleSize">ขนาดอักษรชื่อไทย: <span id="headerTitleSize-val">2.4</span>rem</label>
+                <input type="range" id="headerTitleSize" min="1.5" max="3.5" step="0.1" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerTitleSize-val').textContent = this.value">
+              </div>
+
+              <div class="form-group">
+                <label for="headerSubtitleSize">ขนาดอักษรภาษาอังกฤษ: <span id="headerSubtitleSize-val">1.3</span>rem</label>
+                <input type="range" id="headerSubtitleSize" min="0.9" max="2.0" step="0.1" class="admin-input" style="width: 100%; cursor: pointer;" oninput="document.getElementById('headerSubtitleSize-val').textContent = this.value">
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- SECTION 2: Menu Links -->
+      <section id="tab-menus" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการรายการลิงก์เมนูหลัก</h2>
+          <button class="admin-btn success" onclick="openMenuModal()">เพิ่มลิงก์เมนูใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">เมนูเหล่านี้จะแสดงเป็นเมนูนำทางหลักในหน้าจอทางด้านซ้ายของหน้าบ้าน</p>
+        <div id="menus-list-container">
+          <!-- Dynamic menu items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 3: External Banners -->
+      <section id="tab-banners" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการแบนเนอร์บริการด่วน</h2>
+          <button class="admin-btn success" onclick="openBannerModal()">เพิ่มแบนเนอร์ใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">แบนเนอร์ขนาดสั้นสำหรับเชื่อมไปบริการภายนอก เช่น SGS, ระบบจัดการเรียนรู้, สลิปเงินเดือน ฯลฯ</p>
+        
+        <!-- Google Drive Banners Folder Integration -->
+        <div class="glass-card" style="background: rgba(30, 41, 59, 0.4); border-color: var(--admin-border); margin-bottom: 25px;">
+          <h3 style="margin-bottom: 10px; color: var(--admin-secondary, #ffd700); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--admin-secondary);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            ดึงรูปภาพแบนเนอร์จาก Google Drive Folder
+          </h3>
+          <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+            ระบุลิงก์แชร์โฟลเดอร์ Google Drive (ที่แชร์แบบ <strong>"ทุกคนที่มีลิงก์มีสิทธิ์อ่าน"</strong>) เพื่อดึงรูปภาพแบนเนอร์โดยอัตโนมัติ โดยตั้งชื่อไฟล์ใน Drive ให้ตรงกับรหัสแบนเนอร์ เช่น <code>b1.png</code>, <code>b2.png</code>, <code>b3.png</code> เป็นต้น
+          </p>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="gdrive-banners-url" class="admin-input" placeholder="วางลิงก์แชร์โฟลเดอร์แบนเนอร์ เช่น https://drive.google.com/drive/folders/..." style="flex: 1; margin-bottom: 0;">
+            <button class="admin-btn primary" onclick="saveGDriveBannersConfig()">บันทึกโฟลเดอร์</button>
+          </div>
+          <div id="gdrive-banners-status-msg" style="margin-top: 10px; font-size: 0.85rem; color: #10b981; display: none; align-items: center; gap: 6px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>เปิดใช้งานการดึงภาพแบนเนอร์บริการออนไลน์จาก Google Drive เรียบร้อยแล้ว (จะใช้ภาพจาก Google Drive แทนภาพในโฟลเดอร์ uploads ของรหัสที่จับคู่ตรงกัน)</span>
+          </div>
+        </div>
+
+        <div id="banners-list-container" class="admin-grid">
+          <!-- Dynamic banner items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 4: Hero Slider -->
+      <section id="tab-slider" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการรูปภาพสไลด์หน้าแรก (Hero Carousel)</h2>
+          <button class="admin-btn success" onclick="openSliderModal()">เพิ่มภาพสไลด์ใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">สไลด์ภาพขนาดใหญ่ในหน้าแรกเพื่อประชาสัมพันธ์กิจกรรมสำคัญ</p>
+        <div id="slider-list-container">
+          <!-- Dynamic slider items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 5: News & Announcements -->
+      <section id="tab-news" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการข่าวสารและประกาศโรงเรียน</h2>
+          <button class="admin-btn success" onclick="openNewsModal()">สร้างประกาศใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">เขียน ตารางประกาศ/คำสั่ง และข่าวสารรับสมัครนักเรียน พร้อมทั้งสามารถแนบเอกสาร PDF หรือรูปภาพข่าวได้</p>
+        <div class="glass-card" style="background: rgba(30, 41, 59, 0.4); border-color: var(--admin-border);">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>วันที่</th>
+                <th>หมวดหมู่</th>
+                <th>หัวข้อประกาศ</th>
+                <th>ไฟล์แนบ</th>
+                <th style="width: 150px; text-align: center;">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="news-admin-table-body">
+              <!-- Dynamic news rows listed here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 6: School Board -->
+      <section id="tab-board" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการทำเนียบผู้บริหาร (Management Board)</h2>
+          <button class="admin-btn success" onclick="openBoardModal()">เพิ่มรายชื่อผู้บริหาร</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">รายชื่อคณะผู้บริหาร ผู้อำนวยการ และรองผู้อำนวยการ เรียงตามลำดับความสำคัญ</p>
+        <div id="board-list-container">
+          <!-- Dynamic board items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 7: Activities Gallery -->
+      <section id="tab-activities" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการภาพกิจกรรมเด่น</h2>
+          <button class="admin-btn success" onclick="openActivityModal()">เพิ่มภาพกิจกรรมใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">แกลเลอรี่กิจกรรมเด่นของโรงเรียนแสดงผลในลักษณะบล็อกรูปภาพพร้อมคำอธิบาย</p>
+        <div id="activities-list-container" class="admin-grid">
+          <!-- Dynamic activity items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 7.5: Video Introductions -->
+      <section id="tab-videos" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการวิดีโอแนะนำโรงเรียน</h2>
+          <button class="admin-btn success" onclick="openVideoModal()">เพิ่มวิดีโอใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">ลิงก์วิดีโอแนะนำจาก YouTube เพื่อแสดงบนหน้าแรกของโรงเรียน</p>
+        <div id="videos-list-container" class="admin-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+          <!-- Dynamic video items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 7.6: Partner Networks -->
+      <section id="tab-partners" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการภาคีเครือข่ายพันธมิตรทางการศึกษา</h2>
+          <button class="admin-btn success" onclick="openPartnerModal()">เพิ่มภาคีเครือข่ายใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">พันธมิตรหรือองค์กรที่ร่วมส่งเสริมสนับสนุนสถานศึกษา ปรากฏอยู่ท้ายเพจหน้าแรก</p>
+        <div id="partners-list-container" class="admin-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+          <!-- Dynamic partner items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 7.7: Newsletter Slideshow -->
+      <section id="tab-newsletters" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการจดหมายข่าวประชาสัมพันธ์</h2>
+          <button class="admin-btn success" onclick="openNewsletterModal()">เพิ่มจดหมายข่าวใหม่</button>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 15px;">จดหมายข่าวประชาสัมพันธ์ แสดงผลเป็นสไลด์โชว์ที่คอลัมน์ขวาล่างของหน้าเว็บ</p>
+        
+        <!-- Google Drive Folder Integration Card -->
+        <div class="admin-card" style="margin-bottom: 25px; background: rgba(30, 41, 59, 0.4); border: 1px solid var(--admin-border); padding: 20px; border-radius: 8px;">
+          <h3 style="margin-bottom: 10px; color: var(--admin-secondary, #ffd700); font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--admin-secondary);"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            ดึงข้อมูลจาก Google Drive Folder
+          </h3>
+          <p style="color: var(--admin-text-muted); font-size: 0.9rem; margin-bottom: 15px;">
+            ระบุลิงก์แชร์โฟลเดอร์ Google Drive (ที่แชร์เป็น <strong>"ทุกคนที่มีลิงก์มีสิทธิ์อ่าน"</strong>) เพื่อดึงภาพจดหมายข่าว 10 ล่าสุดมาลงสไลด์โชว์โดยอัตโนมัติ
+          </p>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="gdrive-folder-url" class="admin-input" placeholder="วางลิงก์แชร์โฟลเดอร์ Google Drive เช่น https://drive.google.com/drive/folders/..." style="flex: 1; margin-bottom: 0;">
+            <button class="admin-btn primary" onclick="saveGDriveFolderConfig()">บันทึกโฟลเดอร์</button>
+          </div>
+          <div id="gdrive-status-msg" style="margin-top: 10px; font-size: 0.85rem; color: #10b981; display: none; align-items: center; gap: 6px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>กำลังเปิดใช้งานจดหมายข่าวจาก Google Drive (รายการอัปโหลดแบบปกติจะไม่ถูกแสดงในหน้าเว็บหลัก)</span>
+          </div>
+        </div>
+        <div id="newsletters-list-container" class="admin-grid" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+          <!-- Dynamic newsletter items listed here -->
+        </div>
+      </section>
+
+      <!-- SECTION 8: Sub Pages Content -->
+      <section id="tab-pages" class="admin-section">
+        <div class="section-header">
+          <h2>จัดการเนื้อหาหน้าเว็บย่อย (Static Pages)</h2>
+        </div>
+        <p style="color: var(--admin-text-muted); margin-bottom: 25px;">เลือกหน้าเว็บย่อยด้านซ้ายที่ต้องการ เพื่อแก้ไขเนื้อหาข้อมูลทั่วไปของโรงเรียน</p>
+        
+        <div class="admin-grid" style="grid-template-columns: 200px 1fr; gap: 25px;">
+          <ul class="admin-tabs" style="background-color: rgba(30, 41, 59, 0.3); padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border);">
+            <li><button class="admin-tab-btn" onclick="loadPageEditor('history')">ประวัติโรงเรียน</button></li>
+            <li><button class="admin-tab-btn" onclick="loadPageEditor('goal')">วิสัยทัศน์ / พันธกิจ</button></li>
+            <li><button class="admin-tab-btn" onclick="loadPageEditor('sign')">ตราสัญลักษณ์โรงเรียน</button></li>
+            <li><button class="admin-tab-btn" onclick="loadPageEditor('map')">แผนที่โรงเรียน</button></li>
+            <li><button class="admin-tab-btn" onclick="loadPageEditor('building')">แผนผังอาคารเรียน</button></li>
+            <li><button class="admin-tab-btn" onclick="loadPageEditor('management_structure')">โครงสร้างการบริหาร</button></li>
+            <li><button class="admin-tab-btn" onclick="loadPageEditor('staff_structure')">โครงสร้างบุคลากร</button></li>
+          </ul>
+
+          <div id="page-editor-container" class="glass-card" style="background: rgba(30, 41, 59, 0.4); border-color: var(--admin-border); display: none;">
+            <input type="hidden" id="edit-page-id">
+            <div class="form-group">
+              <label for="edit-page-title">หัวข้อของหน้า</label>
+              <input type="text" id="edit-page-title" class="admin-input">
+            </div>
+            <div class="form-group">
+              <label for="edit-page-content">เนื้อหา (รองรับแท็ก HTML พื้นฐานได้ เช่น &lt;p&gt;, &lt;h3&gt;, &lt;b&gt;, &lt;ol&gt;, &lt;li&gt;)</label>
+              <textarea id="edit-page-content" class="admin-textarea" style="min-height: 250px; font-family: monospace;"></textarea>
+            </div>
+            <button class="admin-btn success" onclick="savePageContent()">บันทึกหน้าเว็บ</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 9: Change Password -->
+      <section id="tab-password" class="admin-section">
+        <div class="section-header">
+          <h2>เปลี่ยนรหัสผ่านผู้ดูแลระบบ</h2>
+          <button class="admin-btn success" onclick="saveNewPassword()">เปลี่ยนรหัสผ่าน</button>
+        </div>
+        
+        <div class="glass-card" style="background: rgba(30, 41, 59, 0.4); border-color: var(--admin-border); max-width: 500px;">
+          <form id="form-change-password" onsubmit="event.preventDefault()">
+            <div class="form-group">
+              <label for="new-pass-val">รหัสผ่านใหม่ (ต้องมีความยาวไม่ต่ำกว่า 4 ตัวอักษร)</label>
+              <input type="password" id="new-pass-val" class="admin-input" required placeholder="กรอกรหัสผ่านใหม่">
+            </div>
+            <div class="form-group">
+              <label for="confirm-pass-val">ยืนยันรหัสผ่านใหม่</label>
+              <input type="password" id="confirm-pass-val" class="admin-input" required placeholder="กรอกยืนยันรหัสผ่านใหม่">
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-notification">ข้อมูลได้รับการบันทึกแล้ว!</div>
+
+  <!-- ========================================== -->
+  <!-- MODAL POPUPS FOR ADMIN FORMS -->
+  <!-- ========================================== -->
+
+  <!-- Modal 1: Menu Edit Modal -->
+  <div id="modal-menu" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-menu-title">แก้ไขลิงก์เมนู</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-menu')">&times;</span>
+      </div>
+      <input type="hidden" id="menu-id">
+      <div class="form-group">
+        <label for="menu-label">ชื่อเมนู (ตัวอักษรบนเว็บ)</label>
+        <input type="text" id="menu-label" class="admin-input" placeholder="ตัวอย่าง: กิจกรรมโรงเรียน">
+      </div>
+      <div class="form-group">
+        <label for="menu-url">ที่อยู่ลิงก์ปลายทาง (URL)</label>
+        <input type="text" id="menu-url" class="admin-input" placeholder="ตัวอย่าง: page.html?id=activities หรือ https://...">
+      </div>
+      <div class="form-group">
+        <label for="menu-external" style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
+          <input type="checkbox" id="menu-external"> ลิงก์ภายนอกโรงเรียน (เปิดในหน้าต่างใหม่ _blank)
+        </label>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-menu')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitMenuForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Banner Edit Modal -->
+  <div id="modal-banner" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-banner-title">เพิ่ม/แก้ไข แบนเนอร์บริการ</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-banner')">&times;</span>
+      </div>
+      <input type="hidden" id="banner-id">
+      <div class="form-group">
+        <label for="banner-title">ชื่อระบบ/ชื่อแบนเนอร์ (สำหรับผู้ใช้ใช้โปรแกรมช่วยอ่าน)</label>
+        <input type="text" id="banner-title" class="admin-input">
+      </div>
+      <div class="form-group">
+        <label for="banner-url">ลิงก์ระบบปลายทาง (URL)</label>
+        <input type="url" id="banner-url" class="admin-input" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label>รูปภาพแบนเนอร์</label>
+        <div class="image-upload-wrapper" style="align-items: flex-start; flex-direction: column; gap: 15px;">
+          <div style="display: flex; gap: 15px; align-items: center; width: 100%;">
+            <img id="banner-preview" src="" alt="Banner Preview" class="image-preview" style="width: 150px; height: 50px; object-fit: cover; background: #e5e7eb; border-radius: 4px;">
+            <div>
+              <input type="file" id="banner-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'banner')">
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="admin-btn primary" onclick="document.getElementById('banner-file-input').click()">เลือกไฟล์ภาพจากคอม</button>
+                <button class="admin-btn" style="background-color: #0f9d58; color: white; border-color: #0f9d58;" onclick="promptGDriveBannerLink()">เลือกจาก Google Drive</button>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 200x65px</p>
+            </div>
+          </div>
+          <div style="width: 100%; border-top: 1px dashed var(--admin-border); padding-top: 12px;">
+            <label for="banner-gdrive-url" style="font-size: 0.85rem; color: var(--admin-text-muted); margin-bottom: 5px; display: block;">หรือ วางลิงก์แชร์รูปภาพจาก Google Drive:</label>
+            <div style="display: flex; gap: 10px;">
+              <input type="text" id="banner-gdrive-url" class="admin-input" placeholder="https://drive.google.com/file/d/.../view?usp=sharing" style="flex: 1; margin-bottom: 0; font-size: 0.85rem;" oninput="handleBannerGDriveLink(this.value)">
+              <button class="admin-btn secondary" onclick="document.getElementById('banner-gdrive-url').value = ''; handleBannerGDriveLink('')" style="padding: 6px 12px; font-size: 0.85rem;">ล้างค่า</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="banner-external" style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; color: var(--admin-text-muted);">
+          <input type="checkbox" id="banner-external"> ลิงก์ภายนอกโรงเรียน (เปิดในหน้าต่างใหม่ _blank)
+        </label>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-banner')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitBannerForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Slider Edit Modal -->
+  <div id="modal-slider" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-slider-title">เพิ่ม/แก้ไข ภาพสไลด์หน้าแรก</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-slider')">&times;</span>
+      </div>
+      <input type="hidden" id="slider-id">
+      <div class="form-group">
+        <label for="slider-caption">ข้อความคำอธิบายสไลด์</label>
+        <input type="text" id="slider-caption" class="admin-input" placeholder="กรอกข้อความสั้นแนะนำสไลด์นี้">
+      </div>
+      <div class="form-group">
+        <label for="slider-link">ลิงก์ปลายทางเมื่อคลิกรูปภาพ (ถ้ามี)</label>
+        <input type="text" id="slider-link" class="admin-input" placeholder="เช่น https://... หรือเว้นว่างหากไม่ต้องการ">
+      </div>
+      <div class="form-group">
+        <label>ไฟล์รูปภาพสไลด์</label>
+        <div class="image-upload-wrapper">
+          <img id="slider-preview" src="" alt="Slider Preview" class="image-preview" style="width: 150px; height: 75px;">
+          <div>
+            <input type="file" id="slider-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'slider')">
+            <button class="admin-btn primary" onclick="document.getElementById('slider-file-input').click()">เลือกไฟล์ภาพ</button>
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 1200x500px</p>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-slider')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitSliderForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Board Edit Modal -->
+  <div id="modal-board" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-board-title">เพิ่ม/แก้ไข คณะผู้บริหาร</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-board')">&times;</span>
+      </div>
+      <input type="hidden" id="board-id">
+      <div class="form-group">
+        <label for="board-name">ชื่อ-นามสกุล (พร้อมยศ)</label>
+        <input type="text" id="board-name" class="admin-input" placeholder="เช่น นายบุญเหลือ ทองอ่อน">
+      </div>
+      <div class="form-group">
+        <label for="board-position">ตำแหน่งตำแหน่งงาน</label>
+        <input type="text" id="board-position" class="admin-input" placeholder="เช่น ผู้อำนวยการโรงเรียน...">
+      </div>
+      <div class="form-group">
+        <label for="board-order">ลำดับการแสดงผล (เช่น 1, 2, 3 เลขน้อยอยู่บนสุด)</label>
+        <input type="number" id="board-order" class="admin-input" min="1" value="1">
+      </div>
+      <div class="form-group">
+        <label>รูปประจำตัวผู้บริหาร</label>
+        <div class="image-upload-wrapper">
+          <img id="board-preview" src="" alt="Board Preview" class="image-preview">
+          <div>
+            <input type="file" id="board-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'board')">
+            <button class="admin-btn primary" onclick="document.getElementById('board-file-input').click()">เลือกไฟล์ภาพ</button>
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 240x320px (สัดส่วน 3:4)</p>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-board')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitBoardForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Activity Edit Modal -->
+  <div id="modal-activity" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-activity-title">เพิ่ม/แก้ไข กิจกรรมเด่น</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-activity')">&times;</span>
+      </div>
+      <input type="hidden" id="activity-id">
+      <div class="form-group">
+        <label for="activity-title">หัวข้อภาพกิจกรรม</label>
+        <input type="text" id="activity-title" class="admin-input">
+      </div>
+      <div class="form-group">
+        <label for="activity-date">วันที่จัดกิจกรรม</label>
+        <input type="date" id="activity-date" class="admin-input">
+      </div>
+      <div class="form-group">
+        <label for="activity-desc">คำอธิบายภาพกิจกรรม</label>
+        <textarea id="activity-desc" class="admin-textarea" placeholder="กรอกรายละเอียดสั้นเกี่ยวกับกิจกรรม..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="activity-link">ลิงก์อ่านข่าวเพิ่มเติม (ถ้ามี)</label>
+        <input type="text" id="activity-link" class="admin-input" placeholder="เช่น https://... หรือเว้นว่าง">
+      </div>
+      <div class="form-group">
+        <label>รูปภาพกิจกรรม</label>
+        <div class="image-upload-wrapper">
+          <img id="activity-preview" src="" alt="Activity Preview" class="image-preview" style="width: 120px; height: 80px;">
+          <div>
+            <input type="file" id="activity-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'activity')">
+            <button class="admin-btn primary" onclick="document.getElementById('activity-file-input').click()">เลือกไฟล์ภาพ</button>
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 600x400px (สัดส่วน 3:2)</p>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-activity')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitActivityForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: News Add/Edit Modal -->
+  <div id="modal-news" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-news-title">เพิ่ม/แก้ไข ข่าวสารโรงเรียน</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-news')">&times;</span>
+      </div>
+      <input type="hidden" id="news-id">
+      <div class="form-group">
+        <label for="news-title">หัวข้อประกาศ / ข่าวสาร</label>
+        <input type="text" id="news-title" class="admin-input" required placeholder="กรอกหัวข้อข่าว">
+      </div>
+      <div class="form-group">
+        <label for="news-date">วันที่เผยแพร่</label>
+        <input type="date" id="news-date" class="admin-input" required>
+      </div>
+      <div class="form-group">
+        <label for="news-category">หมวดหมู่ข่าวสาร</label>
+        <select id="news-category" class="admin-select">
+          <option value="ทั่วไป">ข่าวประชาสัมพันธ์ทั่วไป</option>
+          <option value="ประกาศ/คำสั่ง">ประกาศ/คำสั่ง โรงเรียน</option>
+          <option value="ประกาศรับสมัคร/ผลสอบ">สมัครเรียน/ผลการเรียน</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="news-content">เนื้อหาข่าวโดยละเอียด</label>
+        <textarea id="news-content" class="admin-textarea" style="min-height: 150px;"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label>ภาพหน้าปกข่าวสาร (ถ้ามี)</label>
+        <div class="image-upload-wrapper">
+          <img id="news-preview" src="" alt="News Preview" class="image-preview" style="width: 120px; height: 80px;">
+          <div>
+            <input type="file" id="news-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'news')">
+            <button type="button" class="admin-btn primary" onclick="document.getElementById('news-file-input').click()">เลือกไฟล์ภาพ</button>
+            <button type="button" class="admin-btn danger" onclick="removeNewsImage()">ลบภาพปก</button>
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 600x350px</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>เอกสารแนบข่าว (ไฟล์ PDF, Word, Excel - ถ้ามี)</label>
+        <div class="image-upload-wrapper" style="border-style: solid;">
+          <div id="pdf-upload-info" style="font-weight: bold; color: var(--admin-text);">ยังไม่มีไฟล์เอกสารแนบ</div>
+          <div>
+            <input type="file" id="news-pdf-input" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display: none;" onchange="handlePdfUpload(event)">
+            <button type="button" class="admin-btn primary" onclick="document.getElementById('news-pdf-input').click()">อัปโหลดเอกสาร</button>
+            <button type="button" class="admin-btn danger" onclick="removeNewsPdf()">ลบเอกสารแนบ</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-news')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitNewsForm()">บันทึกประกาศ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 7: Video Edit Modal -->
+  <div id="modal-video" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-video-title">เพิ่ม/แก้ไข วิดีโอแนะนำ</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-video')">&times;</span>
+      </div>
+      <input type="hidden" id="video-id">
+      <div class="form-group">
+        <label for="video-title">หัวข้อวิดีโอ</label>
+        <input type="text" id="video-title" class="admin-input" required placeholder="เช่น แนะนำโรงเรียนฝางวิทยายน">
+      </div>
+      <div class="form-group">
+        <label for="video-youtube-id">YouTube Video ID</label>
+        <input type="text" id="video-youtube-id" class="admin-input" required placeholder="เช่น TwZHgW_Ajbk">
+      </div>
+      <div class="form-group">
+        <label for="video-desc">คำอธิบายวิดีโอ</label>
+        <input type="text" id="video-desc" class="admin-input" placeholder="เช่น รายละเอียดโครงการ หรือเนื้อหาสังเขป">
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-video')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitVideoForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 8: Partner Edit Modal -->
+  <div id="modal-partner" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-partner-title">เพิ่ม/แก้ไข ภาคีเครือข่ายพันธมิตร</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-partner')">&times;</span>
+      </div>
+      <input type="hidden" id="partner-id">
+      <div class="form-group">
+        <label for="partner-title">ชื่อหน่วยงาน/โครงการพันธมิตร</label>
+        <input type="text" id="partner-title" class="admin-input" required placeholder="เช่น MOU ทางวิชาการกับ ม.ขอนแก่น">
+      </div>
+      <div class="form-group">
+        <label for="partner-description">รายละเอียดการสนับสนุน</label>
+        <textarea id="partner-description" class="admin-textarea" required placeholder="กรอกรายละเอียดความร่วมมือ..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="partner-url">ลิงก์เว็บไซต์หรือข้อมูลเพิ่มเติม (ถ้ามี)</label>
+        <input type="text" id="partner-url" class="admin-input" placeholder="เช่น https://... หรือใส่ #">
+      </div>
+      <div class="form-group">
+        <label>รูปภาพแบนเนอร์/สัญลักษณ์หน่วยงาน</label>
+        <div class="image-upload-wrapper">
+          <img id="partner-preview" src="" alt="Partner Preview" class="image-preview" style="width: 120px; height: 80px;">
+          <div>
+            <input type="file" id="partner-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'partner')">
+            <button class="admin-btn primary" onclick="document.getElementById('partner-file-input').click()">เลือกไฟล์ภาพ</button>
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: 300x200px (สัดส่วน 3:2)</p>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-partner')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitPartnerForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 9: Newsletter Edit Modal -->
+  <div id="modal-newsletter" class="admin-modal">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="modal-newsletter-title">เพิ่ม/แก้ไข จดหมายข่าวประชาสัมพันธ์</h3>
+        <span class="admin-modal-close" onclick="closeModal('modal-newsletter')">&times;</span>
+      </div>
+      <input type="hidden" id="newsletter-id">
+      <div class="form-group">
+        <label for="newsletter-title-input">หัวข้อจดหมายข่าว</label>
+        <input type="text" id="newsletter-title-input" class="admin-input" required placeholder="เช่น จดหมายข่าวฉบับที่ 1 ประจำปี 2568">
+      </div>
+      <div class="form-group">
+        <label for="newsletter-order">ลำดับการแสดงผล</label>
+        <input type="number" id="newsletter-order" class="admin-input" required min="1" value="1">
+      </div>
+      <div class="form-group">
+        <label>ภาพจดหมายข่าว (แนะนำสัดส่วน A4 แนวตั้ง)</label>
+        <div class="image-upload-wrapper">
+          <img id="newsletter-preview" src="" alt="Newsletter Preview" class="image-preview" style="width: 100px; height: 133px; object-fit: cover; background: #fff;">
+          <div>
+            <input type="file" id="newsletter-file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event, 'newsletter')">
+            <button class="admin-btn primary" onclick="document.getElementById('newsletter-file-input').click()">เลือกไฟล์ภาพ</button>
+            <p style="font-size: 0.8rem; color: var(--admin-text-muted); margin-top: 5px;">ขนาดแนะนำ: สัดส่วน 3:4 (เช่น 600x800px)</p>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="admin-btn secondary" onclick="closeModal('modal-newsletter')">ยกเลิก</button>
+        <button class="admin-btn success" onclick="submitNewsletterForm()">บันทึกข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/admin.js"></script>
+</body>
+</html>
