@@ -182,6 +182,8 @@ async function loadConfig() {
           }
           
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
+          img.referrerPolicy = 'no-referrer';
           img.src = item.image;
           img.alt = item.title;
           a.appendChild(img);
@@ -238,6 +240,7 @@ function renderNewsletters(data) {
     slide.dataset.index = idx;
 
     const img = document.createElement('img');
+    img.referrerPolicy = 'no-referrer';
     img.src = nl.image;
     img.alt = nl.title || 'จดหมายข่าว';
     img.addEventListener('click', () => {
@@ -312,6 +315,7 @@ async function loadHomepage() {
           div.className = `carousel-item${idx === 0 ? ' active' : ''}`;
           
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
           img.src = slide.image;
           img.alt = slide.caption;
           
@@ -352,6 +356,7 @@ async function loadHomepage() {
           div.className = 'board-card';
           
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
           img.src = member.image;
           img.alt = member.name;
           img.className = 'board-photo';
@@ -471,6 +476,7 @@ async function loadHomepage() {
           const imgWrapper = document.createElement('div');
           imgWrapper.className = 'partner-img-wrapper';
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
           img.src = partner.image;
           img.alt = partner.title;
           imgWrapper.appendChild(img);
@@ -631,7 +637,11 @@ async function loadNewsDetail() {
     const imgWrapper = document.getElementById('news-image-wrapper');
     if (item.imageUrl) {
       imgWrapper.style.display = 'block';
-      document.getElementById('news-image').src = item.imageUrl;
+      const newsImgEl = document.getElementById('news-image');
+      if (newsImgEl) {
+        newsImgEl.referrerPolicy = 'no-referrer';
+        newsImgEl.src = item.imageUrl;
+      }
       document.getElementById('news-image').alt = item.title;
     } else {
       imgWrapper.style.display = 'none';

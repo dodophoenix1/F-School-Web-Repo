@@ -1,4 +1,12 @@
-// Common frontend functions for School Website Template (Netlify Serverless Version)
+// Common frontend functions for School Website Template
+// ============================================================
+//  ⚙️ ตั้งค่าตรงนี้: วาง Apps Script URL ที่ได้จากการ Deploy
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNKaf6Jp30wXv_rboVdoYwzZBt3b3GnFzvZHnGRR38WbIFmogYcPJy_nX9FvwWePdVAw/exec';
+// ถ้ายังไม่ได้ตั้งค่า หรือต้องการ fallback ให้ใช้ database.json แทน
+const USE_FALLBACK_JSON = (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE');
+// Cache duration (milliseconds) — ดึงข้อมูลใหม่ทุก 5 นาที
+const DB_CACHE_MS = 5 * 60 * 1000;
 
 // Resolve placeholder images client-side for serverless deployment
 function resolveImageUrl(url) {
@@ -50,44 +58,56 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Serverless LocalStorage Database Helper
+// ============================================================
+//  Database Helper — ดึงข้อมูลจาก Google Apps Script / JSON
+// ============================================================
 async function getDatabase() {
-  const localData = localStorage.getItem('school_database');
-  if (localData) {
+  // ตรวจสอบ cache ก่อน — ถ้าข้อมูลยังใหม่อยู่ (ภายใน 5 นาที) ใช้ cache ได้เลย
+  const cachedRaw = localStorage.getItem('school_database');
+  const cachedTime = parseInt(localStorage.getItem('school_database_time') || '0');
+  if (cachedRaw && (Date.now() - cachedTime) < DB_CACHE_MS) {
+    try { return JSON.parse(cachedRaw); } catch(e) {}
+  }
+
+  // ─── ดึงจาก Google Apps Script ──────────────────────────
+  if (!USE_FALLBACK_JSON) {
     try {
-      const cached = JSON.parse(localData);
-      // Always fetch the latest database.json to merge in new default fields
-      const res = await fetch('/data/database.json');
-      const defaults = await res.json();
-      // Merge new config keys from defaults that don't exist in cached version
-      if (defaults.config && cached.config) {
-        for (const key in defaults.config) {
-          if (cached.config[key] === undefined) {
-            cached.config[key] = defaults.config[key];
-          }
+      const res = await fetch(APPS_SCRIPT_URL + '?action=getData', { redirect: 'follow' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && !data.error) {
+          localStorage.setItem('school_database', JSON.stringify(data));
+          localStorage.setItem('school_database_time', String(Date.now()));
+          return data;
         }
       }
-      // Merge top-level keys from defaults that don't exist in cached version
-      for (const key in defaults) {
-        if (cached[key] === undefined) {
-          cached[key] = defaults[key];
-        }
-      }
-      localStorage.setItem('school_database', JSON.stringify(cached));
-      return cached;
-    } catch (e) {
-      return JSON.parse(localData);
+    } catch (err) {
+      console.warn('Apps Script fetch failed, falling back to database.json:', err.message);
     }
   }
+
+  // ─── Fallback: ดึงจาก database.json ─────────────────────
   try {
     const res = await fetch('/data/database.json');
     const data = await res.json();
     localStorage.setItem('school_database', JSON.stringify(data));
+    localStorage.setItem('school_database_time', String(Date.now()));
     return data;
   } catch (error) {
-    console.error("Failed to fetch database.json:", error);
+    console.error('Failed to fetch database.json:', error);
+    // ถ้า fetch ใหม่ไม่ได้ ใช้ cache เก่าที่มีอยู่
+    if (cachedRaw) {
+      try { return JSON.parse(cachedRaw); } catch(e) {}
+    }
     return {};
   }
+}
+
+// ล้าง cache เพื่อบังคับดึงข้อมูลใหม่จาก Apps Script
+function refreshDatabase() {
+  localStorage.removeItem('school_database');
+  localStorage.removeItem('school_database_time');
+  location.reload();
 }
 
 // 1. Fetch & Apply Config
@@ -161,7 +181,7 @@ async function loadConfig() {
       if (footerEl) footerEl.textContent = config.footerText;
 
       const logoEl = document.querySelector('.logo-img');
-      if (logoEl && config.logo) logoEl.src = resolveImageUrl(config.logo);
+      if (logoEl && config.logo) { logoEl.referrerPolicy = 'no-referrer'; logoEl.src = resolveImageUrl(config.logo); }
 
       const watermarkEl = document.querySelector('.watermark-bg');
       if (watermarkEl && config.logo) watermarkEl.style.backgroundImage = `url('${resolveImageUrl(config.logo)}')`;
@@ -285,6 +305,8 @@ async function loadConfig() {
           }
           
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
+          img.referrerPolicy = 'no-referrer';
           img.src = resolveImageUrl(item.image);
           img.alt = item.title;
           a.appendChild(img);
@@ -330,6 +352,7 @@ function renderNewsletters(data) {
     slide.dataset.index = idx;
 
     const img = document.createElement('img');
+    img.referrerPolicy = 'no-referrer';
     img.src = resolveImageUrl(nl.image);
     img.alt = nl.title || 'จดหมายข่าว';
     img.addEventListener('click', () => {
@@ -402,6 +425,7 @@ async function loadHomepage() {
           div.className = `carousel-item${idx === 0 ? ' active' : ''}`;
           
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
           img.src = resolveImageUrl(slide.image);
           img.alt = slide.caption;
           
@@ -442,6 +466,7 @@ async function loadHomepage() {
           div.className = 'board-card';
           
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
           img.src = resolveImageUrl(member.image);
           img.alt = member.name;
           img.className = 'board-photo';
@@ -561,6 +586,7 @@ async function loadHomepage() {
           const imgWrapper = document.createElement('div');
           imgWrapper.className = 'partner-img-wrapper';
           const img = document.createElement('img');
+          img.referrerPolicy = 'no-referrer';
           img.src = resolveImageUrl(partner.image);
           img.alt = partner.title;
           imgWrapper.appendChild(img);
@@ -728,7 +754,11 @@ async function loadNewsDetail() {
     const imgWrapper = document.getElementById('news-image-wrapper');
     if (item.imageUrl) {
       imgWrapper.style.display = 'block';
-      document.getElementById('news-image').src = resolveImageUrl(item.imageUrl);
+      const newsImgEl = document.getElementById('news-image');
+      if (newsImgEl) {
+        newsImgEl.referrerPolicy = 'no-referrer';
+        newsImgEl.src = resolveImageUrl(item.imageUrl);
+      }
       document.getElementById('news-image').alt = item.title;
     } else {
       imgWrapper.style.display = 'none';
@@ -844,6 +874,7 @@ function openImageModal(imgSrc) {
   const modalImg = document.getElementById('modal-img-content');
   if (modal && modalImg) {
     modal.classList.add('show');
+    modalImg.referrerPolicy = 'no-referrer';
     modalImg.src = imgSrc;
     
     // Close on click close button or background
