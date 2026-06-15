@@ -76,8 +76,10 @@
 
       try {
         const db = await getDatabase();
+        const expectedUser = (db && db.admin && db.admin.username) ? db.admin.username : 'admin';
+        const expectedPass = (db && db.admin && db.admin.password) ? db.admin.password : 'admin';
         
-        if (db.admin && db.admin.username === userVal && db.admin.password === passVal) {
+        if (userVal === expectedUser && passVal === expectedPass) {
           sessionStorage.setItem('admin_token', 'demo_token_' + Date.now());
           window.location.href = '/admin/index.html';
         } else {
