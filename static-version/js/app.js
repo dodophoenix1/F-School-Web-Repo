@@ -213,7 +213,13 @@ async function getDatabase() {
   const cachedRaw = localStorage.getItem('school_database');
   const cachedTime = parseInt(localStorage.getItem('school_database_time') || '0');
   if (cachedRaw && (Date.now() - cachedTime) < DB_CACHE_MS) {
-    try { return JSON.parse(cachedRaw); } catch(e) {}
+    try {
+      const data = JSON.parse(cachedRaw);
+      // หากข้อมูลใน cache ไม่มีเมนู หรือข้อมูลไม่สมบูรณ์ ให้ข้าม cache แล้วดึงใหม่
+      if (data && data.menus && data.menus.length > 0) {
+        return data;
+      }
+    } catch(e) {}
   }
 
   // ─── ดึงจาก Google Apps Script ──────────────────────────
