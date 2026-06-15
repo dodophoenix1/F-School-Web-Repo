@@ -9,7 +9,7 @@ const path = require('path');
 const https = require('https');
 const http = require('http');
 
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNKaf6Jp30wXv_rboVdoYwzZBt3b3GnFzvZHnGRR38WbIFmogYcPJy_nX9FvwWePdVAw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxJYtmFToXtN0ByDcyZRbtSvI5cQVpIQ1hjnIHfGNZwS7RQlGS725QT8sfi_OScsIjhg/exec';
 
 const dbPath = path.join(__dirname, 'server-version', 'data', 'database.json');
 const db = JSON.parse(fs.readFileSync(dbPath, 'utf8'));

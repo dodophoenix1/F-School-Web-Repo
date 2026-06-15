@@ -2,7 +2,7 @@
 // ============================================================
 //  ⚙️ ตั้งค่าตรงนี้: วาง Apps Script URL ที่ได้จากการ Deploy
 // ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxNKaf6Jp30wXv_rboVdoYwzZBt3b3GnFzvZHnGRR38WbIFmogYcPJy_nX9FvwWePdVAw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzxJYtmFToXtN0ByDcyZRbtSvI5cQVpIQ1hjnIHfGNZwS7RQlGS725QT8sfi_OScsIjhg/exec';
 // ถ้ายังไม่ได้ตั้งค่า หรือต้องการ fallback ให้ใช้ database.json แทน
 const USE_FALLBACK_JSON = (APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE');
 // Cache duration (milliseconds) — ดึงข้อมูลใหม่ทุก 5 นาที

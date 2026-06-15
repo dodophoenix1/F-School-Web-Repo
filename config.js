@@ -15,7 +15,7 @@
 const SCHOOL_CONFIG = {
   // ─── Google Apps Script Web App URL ────────────────────────
   // วาง URL ที่ได้จากการ Deploy Apps Script ตรงนี้
-  APPS_SCRIPT_URL: 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzxJYtmFToXtN0ByDcyZRbtSvI5cQVpIQ1hjnIHfGNZwS7RQlGS725QT8sfi_OScsIjhg/exec',
 
   // ─── Fallback ────────────────────────────────────────────────
   // ถ้า Apps Script ใช้ไม่ได้ ให้ดึงจาก database.json แทน (สำรอง)

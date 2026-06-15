@@ -14,7 +14,7 @@ const DB_FILE = path.join(__dirname, 'data', 'database.json');
 //  ⚙️ ตั้งค่า Apps Script URL ตรงนี้
 //  วาง URL ที่ได้จากการ Deploy Apps Script แล้วกด Run "npm start"
 // ============================================================
-const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbxNKaf6Jp30wXv_rboVdoYwzZBt3b3GnFzvZHnGRR38WbIFmogYcPJy_nX9FvwWePdVAw/exec';
+const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL || 'https://script.google.com/macros/s/AKfycbzxJYtmFToXtN0ByDcyZRbtSvI5cQVpIQ1hjnIHfGNZwS7RQlGS725QT8sfi_OScsIjhg/exec';
 const USE_SHEETS_DB = (APPS_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_WEB_APP_URL_HERE' && APPS_SCRIPT_URL.startsWith('https://'));
 
 
