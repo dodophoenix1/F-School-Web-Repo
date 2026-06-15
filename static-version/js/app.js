@@ -58,6 +58,153 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Map Google Sheets response to local frontend schema (matches database.json schema)
+function mapFromSheetsAll(sheetsData) {
+  const result = {
+    config: sheetsData.config ? { ...sheetsData.config } : {},
+    menus: [],
+    banners: [],
+    slider: [],
+    announcements: [],
+    board: [],
+    activities: [],
+    partners: [],
+    videos: [],
+    pages: sheetsData.pages || {}
+  };
+
+  // 1. Navigation / Menus
+  const rawMenus = sheetsData.navigation || sheetsData.menus;
+  if (rawMenus) {
+    rawMenus.forEach(item => {
+      result.menus.push({
+        id: String(item.id),
+        label: item.title || item.label || '',
+        url: item.url || '',
+        isExternal: item.isExternal === 'true' || item.isExternal === true
+      });
+    });
+  }
+
+  // 2. Banners
+  const rawBanners = sheetsData.banners;
+  if (rawBanners) {
+    rawBanners.forEach(item => {
+      result.banners.push({
+        id: item.id || '',
+        title: item.title || '',
+        url: item.linkUrl || item.url || '',
+        image: item.imageUrl || item.image || '',
+        isExternal: item.isExternal === 'true' || item.isExternal === true
+      });
+    });
+  }
+
+  // 3. Slider
+  const rawSlider = sheetsData.slider;
+  if (rawSlider) {
+    rawSlider.forEach(item => {
+      result.slider.push({
+        id: item.id || '',
+        image: item.imageUrl || item.image || '',
+        caption: item.caption || '',
+        link: item.linkUrl || item.link || ''
+      });
+    });
+  }
+
+  // 4. Announcements
+  const rawAnn = sheetsData.announcements;
+  if (rawAnn) {
+    rawAnn.forEach(item => {
+      result.announcements.push({
+        id: item.id || '',
+        title: item.title || '',
+        content: item.content || '',
+        date: item.date ? item.date.substring(0, 10) : '',
+        category: item.category || '',
+        fileUrl: item.fileUrl || '',
+        imageUrl: item.imageUrl || item.image || ''
+      });
+    });
+  }
+
+  // 5. Board
+  const rawBoard = sheetsData.board;
+  if (rawBoard) {
+    rawBoard.forEach(item => {
+      result.board.push({
+        id: item.id || '',
+        name: item.name || '',
+        position: item.position || '',
+        image: item.imageUrl || item.image || '',
+        order: parseInt(item.order) || 1
+      });
+    });
+  }
+
+  // 6. Activities
+  const rawAct = sheetsData.activities;
+  if (rawAct) {
+    rawAct.forEach(item => {
+      result.activities.push({
+        id: item.id || '',
+        title: item.title || '',
+        image: item.imageUrl || item.image || '',
+        date: item.date ? item.date.substring(0, 10) : '',
+        description: item.description || '',
+        link: item.linkUrl || item.link || ''
+      });
+    });
+  }
+
+  // 7. Partners
+  const rawPart = sheetsData.partners;
+  if (rawPart) {
+    rawPart.forEach(item => {
+      result.partners.push({
+        id: item.id || '',
+        title: item.name || item.title || '',
+        description: item.description || '',
+        url: item.linkUrl || item.url || '',
+        image: item.imageUrl || item.image || ''
+      });
+    });
+  }
+
+  // 8. Videos
+  const rawVideos = sheetsData.videos;
+  if (rawVideos) {
+    rawVideos.forEach(item => {
+      result.videos.push({
+        id: item.id || '',
+        title: item.title || '',
+        youtubeId: item.youtubeId || '',
+        desc: item.desc || ''
+      });
+    });
+  }
+
+  // 9. Newsletters
+  const rawNewsletters = sheetsData.newsletters;
+  if (rawNewsletters) {
+    if (Array.isArray(rawNewsletters)) {
+      result.newsletters = rawNewsletters;
+    } else {
+      const folderId = rawNewsletters.folderId || '';
+      result.newsletters = [
+        {
+          id: 'nl_folder',
+          folderId: folderId,
+          active: 'true'
+        }
+      ];
+    }
+  }
+
+  return result;
+}
+
 // ============================================================
 //  Database Helper — ดึงข้อมูลจาก Google Apps Script / JSON
 // ============================================================
@@ -76,9 +223,10 @@ async function getDatabase() {
       if (res.ok) {
         const data = await res.json();
         if (data && !data.error) {
-          localStorage.setItem('school_database', JSON.stringify(data));
+          const mappedData = mapFromSheetsAll(data);
+          localStorage.setItem('school_database', JSON.stringify(mappedData));
           localStorage.setItem('school_database_time', String(Date.now()));
-          return data;
+          return mappedData;
         }
       }
     } catch (err) {
